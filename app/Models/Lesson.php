@@ -20,6 +20,15 @@ class Lesson extends Model
     ];
 
     /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'laravel_through_key'
+    ];
+
+    /**
      * Get chapter belong to the lesson.
      *
      * @return BelongsTo

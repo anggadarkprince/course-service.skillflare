@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\LessonController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,4 +21,5 @@ Route::apiResources([
     'teachers' => TeacherController::class,
     'courses' => CourseController::class,
     'courses.chapters' => ChapterController::class,
+    'courses.lessons' => LessonController::class,
 ]);

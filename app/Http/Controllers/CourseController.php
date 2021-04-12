@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
@@ -99,7 +98,7 @@ class CourseController extends Controller
         return response()->json([
             'status' => 'success',
             'code' => 200,
-            'data' => $course
+            'data' => $course->load('chapters.lessons')
         ]);
     }
 

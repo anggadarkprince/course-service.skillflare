@@ -7,10 +7,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ChapterController extends Controller
+class LessonController extends Controller
 {
     /**
-     * Display a listing of the chapter.
+     * Display a listing of the resource.
      *
      * @param $courseId
      * @return JsonResponse
@@ -30,12 +30,12 @@ class ChapterController extends Controller
         return response()->json([
             'status' => 'success',
             'code' => 200,
-            'data' => $course->chapters
+            'data' => $course->lessons
         ]);
     }
 
     /**
-     * Store a newly created chapter in storage.
+     * Store a newly created resource in lesson.
      *
      * @param Request $request
      * @param $courseId
@@ -54,8 +54,11 @@ class ChapterController extends Controller
         }
 
         $rules = [
-            'title' => 'required|string|max:100',
+            'title' => 'required|string|max:200',
             'description' => 'string|max:500',
+            'source' => 'required|string',
+            'type' => 'string|in:video,document',
+            'chapter_id' => 'required|integer',
         ];
 
         $data = $request->all();
@@ -70,23 +73,23 @@ class ChapterController extends Controller
             ], 422);
         }
 
-        $chapter = $course->chapters()->create($data);
+        $lesson = $course->lessons()->create($data);
 
         return response()->json([
             'status' => 'success',
             'code' => 200,
-            'data' => $chapter
+            'data' => $lesson
         ]);
     }
 
     /**
-     * Display the specified chapter.
+     * Display the specified resource.
      *
      * @param $courseId
-     * @param $chapterId
+     * @param $lessonId
      * @return JsonResponse
      */
-    public function show($courseId, $chapterId)
+    public function show($courseId, $lessonId)
     {
         $course = Course::find($courseId);
 
@@ -98,32 +101,32 @@ class ChapterController extends Controller
             ], 404);
         }
 
-        $chapter = $course->chapters()->find($chapterId);
+        $lesson = $course->lessons()->find($lessonId);
 
-        if (!$chapter) {
+        if (!$lesson) {
             return response()->json([
                 'status' => 'not found',
                 'code' => 404,
-                'message' => 'Chapter is not owned by id ' . $courseId
+                'message' => 'Lesson is not owned by id ' . $courseId
             ], 404);
         }
 
         return response()->json([
             'status' => 'success',
             'code' => 200,
-            'data' => $chapter->load('lessons')
+            'data' => $lesson
         ]);
     }
 
     /**
-     * Update the specified chapter in storage.
+     * Update the specified resource in lesson.
      *
      * @param Request $request
      * @param $courseId
-     * @param $chapterId
+     * @param $lessonId
      * @return JsonResponse
      */
-    public function update(Request $request, $courseId, $chapterId)
+    public function update(Request $request, $courseId, $lessonId)
     {
         $course = Course::find($courseId);
 
@@ -135,19 +138,22 @@ class ChapterController extends Controller
             ], 404);
         }
 
-        $chapter = $course->chapters()->find($chapterId);
+        $lesson = $course->lessons()->find($lessonId);
 
-        if (!$chapter) {
+        if (!$lesson) {
             return response()->json([
                 'status' => 'not found',
                 'code' => 404,
-                'message' => 'Chapter is not owned by id ' . $courseId
+                'message' => 'Lesson is not owned by id ' . $courseId
             ], 404);
         }
 
         $rules = [
-            'title' => 'required|string|max:100',
+            'title' => 'required|string|max:200',
             'description' => 'string|max:500',
+            'source' => 'required|string',
+            'type' => 'string|in:video,document',
+            'chapter_id' => 'required|integer',
         ];
 
         $data = $request->all();
@@ -162,23 +168,23 @@ class ChapterController extends Controller
             ], 422);
         }
 
-        $chapter->fill($data)->save();
+        $lesson->fill($data)->save();
 
         return response()->json([
             'status' => 'success',
             'code' => 200,
-            'data' => $chapter
+            'data' => $lesson
         ]);
     }
 
     /**
-     * Remove the specified chapter from storage.
+     * Remove the specified resource from lesson.
      *
      * @param $courseId
-     * @param $chapterId
+     * @param $lessonId
      * @return JsonResponse
      */
-    public function destroy($courseId, $chapterId)
+    public function destroy($courseId, $lessonId)
     {
         $course = Course::find($courseId);
 
@@ -190,22 +196,22 @@ class ChapterController extends Controller
             ], 404);
         }
 
-        $chapter = $course->chapters()->find($chapterId);
+        $lesson = $course->lessons()->find($lessonId);
 
-        if (!$chapter) {
+        if (!$lesson) {
             return response()->json([
                 'status' => 'not found',
                 'code' => 404,
-                'message' => 'Chapter is not owned by id ' . $courseId
+                'message' => 'Lesson is not owned by id ' . $courseId
             ], 404);
         }
 
-        $chapter->delete();
+        $lesson->delete();
 
         return response()->json([
             'status' => 'success',
             'code' => 200,
-            'data' => $chapter
+            'data' => $lesson
         ]);
     }
 }
