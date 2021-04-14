@@ -23,3 +23,10 @@ Route::apiResources([
     'courses.chapters' => ChapterController::class,
     'courses.lessons' => LessonController::class,
 ]);
+
+Route::fallback(function () {
+    return response()->json([
+        'status' => 'not found',
+        'code' => 404
+    ], 404);
+});

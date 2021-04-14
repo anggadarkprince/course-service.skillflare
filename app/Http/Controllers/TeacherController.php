@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TeacherRequest;
 use App\Models\Teacher;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Validator;
 
 class TeacherController extends Controller
 {
@@ -17,43 +16,22 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        $teachers = Teacher::all();
-
         return response()->json([
             'status' => 'success',
             'code' => 200,
-            'data' => $teachers
+            'data' => Teacher::paginate()
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param TeacherRequest $request
      * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(TeacherRequest $request)
     {
-        $rules = [
-            'name' => 'required|string|max:100',
-            'avatar' => 'required|url',
-            'email' => 'required|email|max:50',
-            'profession' => 'required|string|max:50',
-        ];
-
-        $data = $request->all();
-
-        $validate = Validator::make($data, $rules);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'validation error',
-                'code' => 422,
-                'message' => $validate->errors()
-            ], 422);
-        }
-
-        $teacher = Teacher::create($data);
+        $teacher = Teacher::create($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -65,20 +43,11 @@ class TeacherController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param Teacher $teacher
      * @return JsonResponse
      */
-    public function show($id)
+    public function show(Teacher $teacher)
     {
-        $teacher = Teacher::find($id);
-
-        if (!$teacher) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-            ], 404);
-        }
-
         return response()->json([
             'status' => 'success',
             'code' => 200,
@@ -89,41 +58,13 @@ class TeacherController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param int $id
+     * @param TeacherRequest $request
+     * @param Teacher $teacher
      * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(TeacherRequest $request, Teacher $teacher)
     {
-        $rules = [
-            'name' => 'required|string|max:100',
-            'avatar' => 'required|url',
-            'email' => 'required|email|max:50',
-            'profession' => 'required|string|max:50',
-        ];
-
-        $data = $request->all();
-
-        $validate = Validator::make($data, $rules);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'validation error',
-                'code' => 422,
-                'message' => $validate->errors()
-            ], 422);
-        }
-
-        $teacher = Teacher::find($id);
-
-        if (!$teacher) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-            ], 404);
-        }
-
-        $teacher->fill($data)->save();
+        $teacher->fill($request->validated())->save();
 
         return response()->json([
             'status' => 'success',
@@ -135,20 +76,12 @@ class TeacherController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param Teacher $teacher
      * @return JsonResponse
+     * @throws Exception
      */
-    public function destroy($id)
+    public function destroy(Teacher $teacher)
     {
-        $teacher = Teacher::find($id);
-
-        if (!$teacher) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-            ], 404);
-        }
-
         $teacher->delete();
 
         return response()->json([

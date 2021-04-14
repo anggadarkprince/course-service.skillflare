@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CourseRequest;
 use App\Models\Course;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
 {
@@ -40,36 +41,12 @@ class CourseController extends Controller
     /**
      * Store a newly created course in storage.
      *
-     * @param Request $request
+     * @param CourseRequest $request
      * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(CourseRequest $request)
     {
-        $rules = [
-            'title' => 'required|string|max:100',
-            'has_certificate' => 'required|boolean',
-            'thumbnail' => 'string|url',
-            'type' => 'required|in:free,premium',
-            'status' => 'required|in:draft,published,inactive',
-            'price' => 'numeric|min:0',
-            'level' => 'required|in:beginner,intermediate,advanced',
-            'teacher_id' => 'required|exists:teachers,id',
-            'description' => 'string',
-        ];
-
-        $data = $request->all();
-
-        $validate = Validator::make($data, $rules);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'validation error',
-                'code' => 422,
-                'message' => $validate->errors()
-            ], 422);
-        }
-
-        $course = Course::create($data);
+        $course = Course::create($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -81,20 +58,11 @@ class CourseController extends Controller
     /**
      * Display the specified course.
      *
-     * @param int $id
+     * @param Course $course
      * @return JsonResponse
      */
-    public function show($id)
+    public function show(Course $course)
     {
-        $course = Course::find($id);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-            ], 404);
-        }
-
         return response()->json([
             'status' => 'success',
             'code' => 200,
@@ -105,46 +73,13 @@ class CourseController extends Controller
     /**
      * Update the specified course in storage.
      *
-     * @param Request $request
-     * @param int $id
+     * @param CourseRequest $request
+     * @param Course $course
      * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(CourseRequest $request, Course $course)
     {
-        $rules = [
-            'title' => 'required|string|max:100',
-            'has_certificate' => 'required|boolean',
-            'thumbnail' => 'string|url',
-            'type' => 'required|in:free,premium',
-            'status' => 'required|in:draft,published,inactive',
-            'price' => 'numeric|min:0',
-            'level' => 'required|in:beginner,intermediate,advanced',
-            'teacher_id' => 'required|exists:teachers,id',
-            'description' => 'string',
-        ];
-
-        $data = $request->all();
-
-        $validate = Validator::make($data, $rules);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'validation error',
-                'code' => 422,
-                'message' => $validate->errors()
-            ], 422);
-        }
-
-        $course = Course::find($id);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-            ], 404);
-        }
-
-        $course->fill($data)->save();
+        $course->fill($request->validated())->save();
 
         return response()->json([
             'status' => 'success',
@@ -156,20 +91,12 @@ class CourseController extends Controller
     /**
      * Remove the specified course from storage.
      *
-     * @param int $id
+     * @param Course $course
      * @return JsonResponse
+     * @throws Exception
      */
-    public function destroy($id)
+    public function destroy(Course $course)
     {
-        $course = Course::find($id);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-            ], 404);
-        }
-
         $course->delete();
 
         return response()->json([

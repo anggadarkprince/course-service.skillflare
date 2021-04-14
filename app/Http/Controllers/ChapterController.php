@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChapterRequest;
 use App\Models\Course;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,21 +14,11 @@ class ChapterController extends Controller
     /**
      * Display a listing of the chapter.
      *
-     * @param $courseId
+     * @param Course $course
      * @return JsonResponse
      */
-    public function index($courseId)
+    public function index(Course $course)
     {
-        $course = Course::find($courseId);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Course not found',
-            ], 404);
-        }
-
         return response()->json([
             'status' => 'success',
             'code' => 200,
@@ -37,40 +29,13 @@ class ChapterController extends Controller
     /**
      * Store a newly created chapter in storage.
      *
-     * @param Request $request
-     * @param $courseId
+     * @param ChapterRequest $request
+     * @param Course $course
      * @return JsonResponse
      */
-    public function store(Request $request, $courseId)
+    public function store(ChapterRequest $request, Course $course)
     {
-        $course = Course::find($courseId);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Course not found',
-            ], 404);
-        }
-
-        $rules = [
-            'title' => 'required|string|max:100',
-            'description' => 'string|max:500',
-        ];
-
-        $data = $request->all();
-
-        $validate = Validator::make($data, $rules);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'validation error',
-                'code' => 422,
-                'message' => $validate->errors()
-            ], 422);
-        }
-
-        $chapter = $course->chapters()->create($data);
+        $chapter = $course->chapters()->create($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -82,29 +47,19 @@ class ChapterController extends Controller
     /**
      * Display the specified chapter.
      *
-     * @param $courseId
+     * @param Course $course
      * @param $chapterId
      * @return JsonResponse
      */
-    public function show($courseId, $chapterId)
+    public function show(Course $course, $chapterId)
     {
-        $course = Course::find($courseId);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Course not found',
-            ], 404);
-        }
-
         $chapter = $course->chapters()->find($chapterId);
 
         if (!$chapter) {
             return response()->json([
                 'status' => 'not found',
                 'code' => 404,
-                'message' => 'Chapter is not owned by id ' . $courseId
+                'message' => 'Chapter is not owned by id ' . $course->id
             ], 404);
         }
 
@@ -118,51 +73,24 @@ class ChapterController extends Controller
     /**
      * Update the specified chapter in storage.
      *
-     * @param Request $request
-     * @param $courseId
+     * @param ChapterRequest $request
+     * @param Course $course
      * @param $chapterId
      * @return JsonResponse
      */
-    public function update(Request $request, $courseId, $chapterId)
+    public function update(ChapterRequest $request, Course $course, $chapterId)
     {
-        $course = Course::find($courseId);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Course not found',
-            ], 404);
-        }
-
         $chapter = $course->chapters()->find($chapterId);
 
         if (!$chapter) {
             return response()->json([
                 'status' => 'not found',
                 'code' => 404,
-                'message' => 'Chapter is not owned by id ' . $courseId
+                'message' => 'Chapter is not owned by id ' . $course->id
             ], 404);
         }
 
-        $rules = [
-            'title' => 'required|string|max:100',
-            'description' => 'string|max:500',
-        ];
-
-        $data = $request->all();
-
-        $validate = Validator::make($data, $rules);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'validation error',
-                'code' => 422,
-                'message' => $validate->errors()
-            ], 422);
-        }
-
-        $chapter->fill($data)->save();
+        $chapter->fill($request->validated())->save();
 
         return response()->json([
             'status' => 'success',
@@ -174,29 +102,20 @@ class ChapterController extends Controller
     /**
      * Remove the specified chapter from storage.
      *
-     * @param $courseId
+     * @param Course $course
      * @param $chapterId
      * @return JsonResponse
+     * @throws Exception
      */
-    public function destroy($courseId, $chapterId)
+    public function destroy(Course $course, $chapterId)
     {
-        $course = Course::find($courseId);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Course not found',
-            ], 404);
-        }
-
         $chapter = $course->chapters()->find($chapterId);
 
         if (!$chapter) {
             return response()->json([
                 'status' => 'not found',
                 'code' => 404,
-                'message' => 'Chapter is not owned by id ' . $courseId
+                'message' => 'Chapter is not owned by id ' . $course->id
             ], 404);
         }
 
