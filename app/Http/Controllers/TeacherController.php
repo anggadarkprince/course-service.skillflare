@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 class TeacherController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the teacher.
      *
      * @return JsonResponse
      */
@@ -24,7 +24,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created teacher in storage.
      *
      * @param TeacherRequest $request
      * @return JsonResponse
@@ -41,7 +41,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified teacher.
      *
      * @param Teacher $teacher
      * @return JsonResponse
@@ -56,7 +56,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified teacher in storage.
      *
      * @param TeacherRequest $request
      * @param Teacher $teacher
@@ -74,7 +74,7 @@ class TeacherController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified teacher from storage.
      *
      * @param Teacher $teacher
      * @return JsonResponse

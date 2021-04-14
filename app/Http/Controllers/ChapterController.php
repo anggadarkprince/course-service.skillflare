@@ -6,8 +6,7 @@ use App\Http\Requests\ChapterRequest;
 use App\Models\Course;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ChapterController extends Controller
 {
@@ -56,11 +55,7 @@ class ChapterController extends Controller
         $chapter = $course->chapters()->find($chapterId);
 
         if (!$chapter) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Chapter is not owned by id ' . $course->id
-            ], 404);
+            throw new NotFoundHttpException('Chapter is not owned by id ' . $course->id);
         }
 
         return response()->json([
@@ -83,11 +78,7 @@ class ChapterController extends Controller
         $chapter = $course->chapters()->find($chapterId);
 
         if (!$chapter) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Chapter is not owned by id ' . $course->id
-            ], 404);
+            throw new NotFoundHttpException('Chapter is not owned by id ' . $course->id);
         }
 
         $chapter->fill($request->validated())->save();
@@ -112,11 +103,7 @@ class ChapterController extends Controller
         $chapter = $course->chapters()->find($chapterId);
 
         if (!$chapter) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Chapter is not owned by id ' . $course->id
-            ], 404);
+            throw new NotFoundHttpException('Chapter is not owned by id ' . $course->id);
         }
 
         $chapter->delete();

@@ -2,31 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LessonRequest;
 use App\Models\Course;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LessonController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the lesson.
      *
-     * @param $courseId
+     * @param Course $course
      * @return JsonResponse
      */
-    public function index($courseId)
+    public function index(Course $course)
     {
-        $course = Course::find($courseId);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Course not found',
-            ], 404);
-        }
-
         return response()->json([
             'status' => 'success',
             'code' => 200,
@@ -35,45 +26,15 @@ class LessonController extends Controller
     }
 
     /**
-     * Store a newly created resource in lesson.
+     * Store a newly created lesson in lesson.
      *
-     * @param Request $request
-     * @param $courseId
+     * @param LessonRequest $request
+     * @param Course $course
      * @return JsonResponse
      */
-    public function store(Request $request, $courseId)
+    public function store(LessonRequest $request, Course $course)
     {
-        $course = Course::find($courseId);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Course not found',
-            ], 404);
-        }
-
-        $rules = [
-            'title' => 'required|string|max:200',
-            'description' => 'string|max:500',
-            'source' => 'required|string',
-            'type' => 'string|in:video,document',
-            'chapter_id' => 'required|integer',
-        ];
-
-        $data = $request->all();
-
-        $validate = Validator::make($data, $rules);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'validation error',
-                'code' => 422,
-                'message' => $validate->errors()
-            ], 422);
-        }
-
-        $lesson = $course->lessons()->create($data);
+        $lesson = $course->lessons()->create($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -83,32 +44,18 @@ class LessonController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified lesson.
      *
-     * @param $courseId
+     * @param Course $course
      * @param $lessonId
      * @return JsonResponse
      */
-    public function show($courseId, $lessonId)
+    public function show(Course $course, $lessonId)
     {
-        $course = Course::find($courseId);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Course not found',
-            ], 404);
-        }
-
         $lesson = $course->lessons()->find($lessonId);
 
         if (!$lesson) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Lesson is not owned by id ' . $courseId
-            ], 404);
+            throw new NotFoundHttpException('Lesson is not owned by id ' . $course->id);
         }
 
         return response()->json([
@@ -119,56 +66,22 @@ class LessonController extends Controller
     }
 
     /**
-     * Update the specified resource in lesson.
+     * Update the specified lesson in lesson.
      *
-     * @param Request $request
-     * @param $courseId
+     * @param LessonRequest $request
+     * @param Course $course
      * @param $lessonId
      * @return JsonResponse
      */
-    public function update(Request $request, $courseId, $lessonId)
+    public function update(LessonRequest $request, Course $course, $lessonId)
     {
-        $course = Course::find($courseId);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Course not found',
-            ], 404);
-        }
-
         $lesson = $course->lessons()->find($lessonId);
 
         if (!$lesson) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Lesson is not owned by id ' . $courseId
-            ], 404);
+            throw new NotFoundHttpException('Lesson is not owned by id ' . $course->id);
         }
 
-        $rules = [
-            'title' => 'required|string|max:200',
-            'description' => 'string|max:500',
-            'source' => 'required|string',
-            'type' => 'string|in:video,document',
-            'chapter_id' => 'required|integer',
-        ];
-
-        $data = $request->all();
-
-        $validate = Validator::make($data, $rules);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => 'validation error',
-                'code' => 422,
-                'message' => $validate->errors()
-            ], 422);
-        }
-
-        $lesson->fill($data)->save();
+        $lesson->fill($request->validated())->save();
 
         return response()->json([
             'status' => 'success',
@@ -178,32 +91,19 @@ class LessonController extends Controller
     }
 
     /**
-     * Remove the specified resource from lesson.
+     * Remove the specified lesson from lesson.
      *
-     * @param $courseId
+     * @param Course $course
      * @param $lessonId
      * @return JsonResponse
+     * @throws Exception
      */
-    public function destroy($courseId, $lessonId)
+    public function destroy(Course $course, $lessonId)
     {
-        $course = Course::find($courseId);
-
-        if (!$course) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Course not found',
-            ], 404);
-        }
-
         $lesson = $course->lessons()->find($lessonId);
 
         if (!$lesson) {
-            return response()->json([
-                'status' => 'not found',
-                'code' => 404,
-                'message' => 'Lesson is not owned by id ' . $courseId
-            ], 404);
+            throw new NotFoundHttpException('Lesson is not owned by id ' . $course->id);
         }
 
         $lesson->delete();

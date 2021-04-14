@@ -27,6 +27,7 @@ Route::apiResources([
 Route::fallback(function () {
     return response()->json([
         'status' => 'not found',
-        'code' => 404
+        'code' => 404,
+        'message' => 'Path not found'
     ], 404);
 });

@@ -7,6 +7,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -54,10 +55,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e)
     {
-        if ($e instanceof ModelNotFoundException) {
+        if ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException) {
             return $request->expectsJson()
                 ? new JsonResponse(
-                    ['status' => 'not found', 'code' => 404],
+                    ['status' => 'not found', 'code' => 404, 'message' => $e->getMessage() ?: 'Request not found'],
                     404,
                     $this->isHttpException($e) ? $e->getHeaders() : [],
                     JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
