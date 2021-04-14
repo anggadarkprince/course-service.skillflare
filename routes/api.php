@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseImageController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,8 @@ Route::apiResources([
     'courses.chapters' => ChapterController::class,
     'courses.lessons' => LessonController::class,
 ]);
+
+Route::apiResource('courses.images', CourseImageController::class)->only(['index', 'store', 'destroy']);
 
 Route::fallback(function () {
     return response()->json([
