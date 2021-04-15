@@ -13,9 +13,11 @@ class ReviewRequest extends BaseRequest
      */
     public function rules()
     {
+        $reviewId = $this->route('review');
+
         return [
             'user_id' => 'required|integer',
-            'course_id' => ['required', 'exists:courses,id', new UniqueUserReview($this->user()->id)],
+            'course_id' => ['required', 'exists:courses,id', new UniqueUserReview($this->user()->id, $reviewId)],
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'string|max:2000'
         ];

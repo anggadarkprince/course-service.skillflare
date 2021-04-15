@@ -8,15 +8,18 @@ use Illuminate\Contracts\Validation\Rule;
 class UniqueUserCourse implements Rule
 {
     private $userId;
+    private $exceptId;
 
     /**
      * Create a new rule instance.
      *
      * @param $userId
+     * @param $exceptId
      */
-    public function __construct($userId)
+    public function __construct($userId, $exceptId)
     {
         $this->userId = $userId;
+        $this->exceptId = $exceptId ?: 0;
     }
 
     /**
@@ -28,7 +31,12 @@ class UniqueUserCourse implements Rule
      */
     public function passes($attribute, $value)
     {
-        return !UserCourse::where(['user_id' => $this->userId, 'course_id' => $value])->exists();
+        return !UserCourse::where([
+            'user_id' => $this->userId,
+            'course_id' => $value
+        ])
+            ->where('id', '!=', $this->exceptId)
+            ->exists();
     }
 
     /**

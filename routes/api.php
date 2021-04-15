@@ -25,7 +25,7 @@ Route::apiResources([
     'courses' => CourseController::class,
     'courses.chapters' => ChapterController::class,
     'courses.lessons' => LessonController::class,
-    'courses.review' => ReviewController::class,
+    'courses.reviews' => ReviewController::class,
 ]);
 
 Route::apiResource('courses.images', CourseImageController::class)->only(['index', 'store', 'destroy']);

@@ -21,7 +21,7 @@ class ReviewController extends Controller
         return response()->json([
             'status' => 'success',
             'code' => 200,
-            'data' => $course->reviews
+            'data' => $course->reviews()->paginate()
         ]);
     }
 
