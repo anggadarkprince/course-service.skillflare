@@ -2,10 +2,10 @@
 
 namespace App\Rules;
 
-use App\Models\UserCourse;
+use App\Models\Review;
 use Illuminate\Contracts\Validation\Rule;
 
-class UniqueUserCourse implements Rule
+class UniqueUserReview implements Rule
 {
     private $userId;
 
@@ -28,7 +28,7 @@ class UniqueUserCourse implements Rule
      */
     public function passes($attribute, $value)
     {
-        return !UserCourse::where(['user_id' => $this->userId, 'course_id' => $value])->exists();
+        return !Review::where(['user_id' => $this->userId, 'course_id' => $value])->exists();
     }
 
     /**
@@ -38,6 +38,6 @@ class UniqueUserCourse implements Rule
      */
     public function message()
     {
-        return 'The :attribute is already owned by user.';
+        return 'The :attribute is already reviewed by user.';
     }
 }

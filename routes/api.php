@@ -4,6 +4,7 @@ use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseImageController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UserCourseController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,7 @@ Route::apiResources([
     'courses' => CourseController::class,
     'courses.chapters' => ChapterController::class,
     'courses.lessons' => LessonController::class,
+    'courses.review' => ReviewController::class,
 ]);
 
 Route::apiResource('courses.images', CourseImageController::class)->only(['index', 'store', 'destroy']);
