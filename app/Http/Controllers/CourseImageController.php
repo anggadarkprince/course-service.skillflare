@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class CourseImageController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the image.
      *
      * @param Course $course
      * @return JsonResponse
@@ -26,7 +26,7 @@ class CourseImageController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created image in storage.
      *
      * @param CourseImageRequest $request
      * @param Course $course
@@ -44,7 +44,7 @@ class CourseImageController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified image.
      *
      * @param Course $course
      * @param $courseImageId
@@ -66,7 +66,7 @@ class CourseImageController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified image from storage.
      *
      * @param Course $course
      * @param $courseImageId

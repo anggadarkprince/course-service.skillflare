@@ -13,6 +13,9 @@ class Course extends Model
 {
     use HasFactory;
 
+    const TYPE_PREMIUM = 'premium';
+    const TYPE_FREE = 'free';
+
     /**
      * The attributes that are mass assignable.
      *

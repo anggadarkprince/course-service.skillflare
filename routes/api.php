@@ -5,6 +5,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseImageController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\UserCourseController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,6 +27,8 @@ Route::apiResources([
 ]);
 
 Route::apiResource('courses.images', CourseImageController::class)->only(['index', 'store', 'destroy']);
+Route::post('user-courses/premium', [UserCourseController::class, 'storePremiumAccess']);
+Route::apiResource('user-courses', UserCourseController::class)->only(['index', 'store']);
 
 Route::fallback(function () {
     return response()->json([
