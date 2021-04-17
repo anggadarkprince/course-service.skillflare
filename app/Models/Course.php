@@ -79,11 +79,11 @@ class Course extends Model
     /**
      * Get users of the course.
      *
-     * @return BelongsToMany
+     * @return HasMany
      */
-    public function users()
+    public function userCourses()
     {
-        return $this->belongsToMany(User::class, 'user_courses');
+        return $this->hasMany(UserCourse::class);
     }
 
     /**

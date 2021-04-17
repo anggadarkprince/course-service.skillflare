@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CourseRequest;
 use App\Models\Course;
+use App\Models\UserCourse;
 use Exception;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -63,10 +65,17 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
+        $course['total_user'] = UserCourse::where('course_id', $course->id)->count();
         return response()->json([
             'status' => 'success',
             'code' => 200,
-            'data' => $course->load('chapters.lessons')
+            'data' => $course
+                ->load('chapters.lessons')
+                ->load('teacher')
+                ->load('courseImages')
+                ->load(['reviews' => function (Relation $builder) {
+                    $builder->take(100);
+                }])
         ]);
     }
 
