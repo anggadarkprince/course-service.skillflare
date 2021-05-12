@@ -17,7 +17,7 @@ class ReviewRequest extends BaseRequest
 
         return [
             'user_id' => 'required|integer',
-            'course_id' => ['required', 'exists:courses,id', new UniqueUserReview($this->user()->id, $reviewId)],
+            'course_id' => ['required', 'exists:courses,id', new UniqueUserReview($this->input('user_id'), $reviewId)],
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'string|max:2000'
         ];

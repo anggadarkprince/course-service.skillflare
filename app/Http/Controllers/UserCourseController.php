@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserCourseRequest;
 use App\Models\Course;
+use App\Models\User;
 use App\Models\UserCourse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -23,7 +24,7 @@ class UserCourseController extends Controller
     {
         $userCourse = UserCourse::query()->with('course');
 
-        $userId = $request->user()->id;
+        $userId = $request->input('user_id');
 
         $userCourse->when($userId, function (Builder $query) use ($userId) {
             return $query->where('user_id', $userId);
@@ -44,7 +45,7 @@ class UserCourseController extends Controller
      */
     public function store(UserCourseRequest $request)
     {
-        $user = $request->user();
+        $user = User::find($request->input('user_id'));
 
         $course = Course::find($request->input('course_id'));
 
@@ -59,7 +60,7 @@ class UserCourseController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'code' => 500,
-                    'message' => 'service user unavailable'
+                    'message' => 'service order unavailable'
                 ], 500);
             }
         } else {

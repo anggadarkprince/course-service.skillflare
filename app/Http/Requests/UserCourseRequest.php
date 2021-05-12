@@ -14,7 +14,7 @@ class UserCourseRequest extends BaseRequest
     public function rules()
     {
         return [
-            'course_id' => ['required', 'integer', 'exists:courses,id', new UniqueUserCourse($this->user()->id)],
+            'course_id' => ['required', 'integer', 'exists:courses,id', new UniqueUserCourse($this->input('user_id'), 0)],
             'user_id' => 'required|integer'
         ];
     }
