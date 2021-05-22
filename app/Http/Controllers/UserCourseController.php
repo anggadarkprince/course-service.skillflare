@@ -51,7 +51,7 @@ class UserCourseController extends Controller
 
         if ($course->type === Course::TYPE_PREMIUM) {
             try {
-                $response = Http::post(env('SERVICE_ORDER_PAYMENT_URL') . 'api/orders', [
+                $response = Http::post(env('SERVICE_ORDER_URL') . 'api/orders', [
                     'user' => $user,
                     'course' => $course->toArray()
                 ]);

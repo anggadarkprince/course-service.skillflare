@@ -3,56 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TeacherRequest;
+use App\Http\Resources\TeacherCollection;
+use App\Http\Resources\TeacherResource;
+use App\Http\Resources\WrapperResource;
 use App\Models\Teacher;
 use Exception;
-use Illuminate\Http\JsonResponse;
 
 class TeacherController extends Controller
 {
     /**
      * Display a listing of the teacher.
      *
-     * @return JsonResponse
+     * @return TeacherCollection
      */
     public function index()
     {
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => Teacher::paginate()
-        ]);
+        return new TeacherCollection(Teacher::paginate());
     }
 
     /**
      * Store a newly created teacher in storage.
      *
      * @param TeacherRequest $request
-     * @return JsonResponse
+     * @return TeacherResource
      */
     public function store(TeacherRequest $request)
     {
         $teacher = Teacher::create($request->validated());
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $teacher
-        ]);
+        return new TeacherResource($teacher);
     }
 
     /**
      * Display the specified teacher.
      *
      * @param Teacher $teacher
-     * @return JsonResponse
+     * @return TeacherResource
      */
     public function show(Teacher $teacher)
     {
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $teacher
-        ]);
+        return new TeacherResource($teacher);
     }
 
     /**
@@ -60,34 +50,26 @@ class TeacherController extends Controller
      *
      * @param TeacherRequest $request
      * @param Teacher $teacher
-     * @return JsonResponse
+     * @return TeacherResource
      */
     public function update(TeacherRequest $request, Teacher $teacher)
     {
         $teacher->fill($request->validated())->save();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $teacher
-        ]);
+        return new TeacherResource($teacher);
     }
 
     /**
      * Remove the specified teacher from storage.
      *
      * @param Teacher $teacher
-     * @return JsonResponse
+     * @return TeacherResource
      * @throws Exception
      */
     public function destroy(Teacher $teacher)
     {
         $teacher->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $teacher
-        ]);
+        return new TeacherResource($teacher);
     }
 }

@@ -20,6 +20,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', function () {
+    return response()->redirectToRoute('version');
+})->name('api');
+Route::get('version', function () {
+    return response()->json([
+        'app' => env('APP_NAME', 'Course Service'),
+        'code' => 'course-service.skillflare',
+        'version' => 'v1.0'
+    ]);
+})->name('version');
+
 Route::apiResources([
     'teachers' => TeacherController::class,
     'courses' => CourseController::class,
@@ -29,7 +40,7 @@ Route::apiResources([
 ]);
 
 Route::apiResource('courses.images', CourseImageController::class)->only(['index', 'store', 'destroy']);
-Route::post('user-courses/premium', [UserCourseController::class, 'storePremiumAccess']);
+Route::post('user-courses/premium', [UserCourseController::class, 'storePremiumAccess'])->name('user-courses.premium');
 Route::apiResource('user-courses', UserCourseController::class)->only(['index', 'store']);
 
 Route::fallback(function () {
@@ -38,4 +49,4 @@ Route::fallback(function () {
         'code' => 404,
         'message' => 'Path not found'
     ], 404);
-});
+})->name('404');
