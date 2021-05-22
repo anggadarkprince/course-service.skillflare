@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CourseImageRequest;
+use App\Http\Resources\CourseImageResource;
 use App\Models\Course;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CourseImageController extends Controller
@@ -14,15 +13,11 @@ class CourseImageController extends Controller
      * Display a listing of the image.
      *
      * @param Course $course
-     * @return JsonResponse
+     * @return CourseImageResource
      */
     public function index(Course $course)
     {
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $course->courseImages
-        ]);
+        return new CourseImageResource($course->courseImages);
     }
 
     /**
@@ -30,17 +25,13 @@ class CourseImageController extends Controller
      *
      * @param CourseImageRequest $request
      * @param Course $course
-     * @return JsonResponse
+     * @return CourseImageResource
      */
     public function store(CourseImageRequest $request, Course $course)
     {
         $courseImage = $course->courseImages()->create($request->validated());
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $courseImage
-        ]);
+        return new CourseImageResource($courseImage);
     }
 
     /**
@@ -48,7 +39,7 @@ class CourseImageController extends Controller
      *
      * @param Course $course
      * @param $courseImageId
-     * @return JsonResponse
+     * @return CourseImageResource
      */
     public function show(Course $course, $courseImageId)
     {
@@ -58,11 +49,7 @@ class CourseImageController extends Controller
             throw new NotFoundHttpException('Image is not owned by id ' . $course->id);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $courseImage
-        ]);
+        return new CourseImageResource($courseImage);
     }
 
     /**
@@ -70,8 +57,7 @@ class CourseImageController extends Controller
      *
      * @param Course $course
      * @param $courseImageId
-     * @return JsonResponse
-     * @throws Exception
+     * @return CourseImageResource
      */
     public function destroy(Course $course, $courseImageId)
     {
@@ -83,10 +69,6 @@ class CourseImageController extends Controller
 
         $courseImage->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $courseImage
-        ]);
+        return new CourseImageResource($courseImage);
     }
 }

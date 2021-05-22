@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ModelOwnerException;
 use App\Http\Requests\ChapterRequest;
+use App\Http\Resources\ChapterResource;
 use App\Models\Course;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ChapterController extends Controller
 {
@@ -14,15 +14,11 @@ class ChapterController extends Controller
      * Display a listing of the chapter.
      *
      * @param Course $course
-     * @return JsonResponse
+     * @return ChapterResource
      */
     public function index(Course $course)
     {
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $course->chapters
-        ]);
+        return new ChapterResource($course->chapters);
     }
 
     /**
@@ -30,17 +26,13 @@ class ChapterController extends Controller
      *
      * @param ChapterRequest $request
      * @param Course $course
-     * @return JsonResponse
+     * @return ChapterResource
      */
     public function store(ChapterRequest $request, Course $course)
     {
         $chapter = $course->chapters()->create($request->validated());
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $chapter
-        ]);
+        return new ChapterResource($chapter);
     }
 
     /**
@@ -48,21 +40,15 @@ class ChapterController extends Controller
      *
      * @param Course $course
      * @param $chapterId
-     * @return JsonResponse
+     * @return ChapterResource
      */
     public function show(Course $course, $chapterId)
     {
         $chapter = $course->chapters()->find($chapterId);
 
-        if (!$chapter) {
-            throw new NotFoundHttpException('Chapter is not owned by id ' . $course->id);
-        }
+        if (!$chapter) throw new ModelOwnerException();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $chapter->load('lessons')
-        ]);
+        return new ChapterResource($chapter);
     }
 
     /**
@@ -71,23 +57,17 @@ class ChapterController extends Controller
      * @param ChapterRequest $request
      * @param Course $course
      * @param $chapterId
-     * @return JsonResponse
+     * @return ChapterResource
      */
     public function update(ChapterRequest $request, Course $course, $chapterId)
     {
         $chapter = $course->chapters()->find($chapterId);
 
-        if (!$chapter) {
-            throw new NotFoundHttpException('Chapter is not owned by id ' . $course->id);
-        }
+        if (!$chapter) throw new ModelOwnerException();
 
         $chapter->fill($request->validated())->save();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $chapter
-        ]);
+        return new ChapterResource($chapter);
     }
 
     /**
@@ -95,23 +75,17 @@ class ChapterController extends Controller
      *
      * @param Course $course
      * @param $chapterId
-     * @return JsonResponse
+     * @return ChapterResource
      * @throws Exception
      */
     public function destroy(Course $course, $chapterId)
     {
         $chapter = $course->chapters()->find($chapterId);
 
-        if (!$chapter) {
-            throw new NotFoundHttpException('Chapter is not owned by id ' . $course->id);
-        }
+        if (!$chapter) throw new ModelOwnerException();
 
         $chapter->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $chapter
-        ]);
+        return new ChapterResource($chapter);
     }
 }

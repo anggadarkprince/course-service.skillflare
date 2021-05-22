@@ -55,7 +55,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e)
     {
-        if ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException) {
+        if ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException || $e instanceof ModelOwnerException) {
             return $request->expectsJson()
                 ? new JsonResponse(
                     ['status' => 'not found', 'code' => 404, 'message' => $e->getMessage() ?: 'Request not found'],

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ModelOwnerException;
 use App\Http\Requests\ReviewRequest;
+use App\Http\Resources\ReviewCollection;
+use App\Http\Resources\ReviewResource;
 use App\Models\Course;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ReviewController extends Controller
 {
@@ -14,15 +15,11 @@ class ReviewController extends Controller
      * Display a listing of the resource.
      *
      * @param Course $course
-     * @return JsonResponse
+     * @return ReviewCollection
      */
     public function index(Course $course)
     {
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $course->reviews()->paginate()
-        ]);
+        return new ReviewCollection($course->reviews()->paginate());
     }
 
     /**
@@ -30,88 +27,66 @@ class ReviewController extends Controller
      *
      * @param ReviewRequest $request
      * @param Course $course
-     * @return JsonResponse
+     * @return ReviewResource
      */
     public function store(ReviewRequest $request, Course $course)
     {
         $review = $course->reviews()->create($request->validated());
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $review
-        ]);
+        return new ReviewResource($review);
     }
 
     /**
-     * Display the specified resource.
+     * Display the review.
      *
      * @param Course $course
      * @param $reviewId
-     * @return JsonResponse
+     * @return ReviewResource
      */
     public function show(Course $course, $reviewId)
     {
         $review = $course->reviews()->find($reviewId);
 
-        if (!$review) {
-            throw new NotFoundHttpException('Review is not owned by id ' . $course->id);
-        }
+        if (!$review) throw new ModelOwnerException();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $review
-        ]);
+        return new ReviewResource($review);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the review in storage.
      *
      * @param ReviewRequest $request
      * @param Course $course
      * @param $reviewId
-     * @return JsonResponse
+     * @return ReviewResource
      */
     public function update(ReviewRequest $request, Course $course, $reviewId)
     {
         $review = $course->reviews()->find($reviewId);
 
-        if (!$review) {
-            throw new NotFoundHttpException('Review is not owned by id ' . $course->id);
-        }
+        if (!$review) throw new ModelOwnerException();
 
         $review->fill($request->validated())->save();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $review
-        ]);
+        return new ReviewResource($review);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the review from storage.
      *
      * @param Course $course
      * @param $reviewId
-     * @return JsonResponse
+     * @return ReviewResource
      * @throws Exception
      */
     public function destroy(Course $course, $reviewId)
     {
         $review = $course->reviews()->find($reviewId);
 
-        if (!$review) {
-            throw new NotFoundHttpException('Review is not owned by id ' . $course->id);
-        }
+        if (!$review) throw new ModelOwnerException();
 
         $review->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $review
-        ]);
+        return new ReviewResource($review);
     }
 }

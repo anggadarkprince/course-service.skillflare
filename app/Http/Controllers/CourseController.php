@@ -8,7 +8,6 @@ use App\Http\Resources\CourseResource;
 use App\Models\Course;
 use App\Models\UserCourse;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller

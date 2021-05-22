@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LessonRequest;
+use App\Http\Resources\LessonResource;
 use App\Models\Course;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LessonController extends Controller
@@ -14,15 +13,11 @@ class LessonController extends Controller
      * Display a listing of the lesson.
      *
      * @param Course $course
-     * @return JsonResponse
+     * @return LessonResource
      */
     public function index(Course $course)
     {
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $course->lessons
-        ]);
+        return new LessonResource($course->lessons);
     }
 
     /**
@@ -30,17 +25,13 @@ class LessonController extends Controller
      *
      * @param LessonRequest $request
      * @param Course $course
-     * @return JsonResponse
+     * @return LessonResource
      */
     public function store(LessonRequest $request, Course $course)
     {
         $lesson = $course->lessons()->create($request->validated());
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $lesson
-        ]);
+        return new LessonResource($lesson);
     }
 
     /**
@@ -48,7 +39,7 @@ class LessonController extends Controller
      *
      * @param Course $course
      * @param $lessonId
-     * @return JsonResponse
+     * @return LessonResource
      */
     public function show(Course $course, $lessonId)
     {
@@ -58,11 +49,7 @@ class LessonController extends Controller
             throw new NotFoundHttpException('Lesson is not owned by id ' . $course->id);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $lesson
-        ]);
+        return new LessonResource($lesson);
     }
 
     /**
@@ -71,7 +58,7 @@ class LessonController extends Controller
      * @param LessonRequest $request
      * @param Course $course
      * @param $lessonId
-     * @return JsonResponse
+     * @return LessonResource
      */
     public function update(LessonRequest $request, Course $course, $lessonId)
     {
@@ -83,11 +70,7 @@ class LessonController extends Controller
 
         $lesson->fill($request->validated())->save();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $lesson
-        ]);
+        return new LessonResource($lesson);
     }
 
     /**
@@ -95,8 +78,7 @@ class LessonController extends Controller
      *
      * @param Course $course
      * @param $lessonId
-     * @return JsonResponse
-     * @throws Exception
+     * @return LessonResource
      */
     public function destroy(Course $course, $lessonId)
     {
@@ -108,10 +90,6 @@ class LessonController extends Controller
 
         $lesson->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $lesson
-        ]);
+        return new LessonResource($lesson);
     }
 }
