@@ -24,23 +24,18 @@ class TeacherResource extends JsonResource
      */
     public function toArray($request)
     {
-        $teacher = [
-            'id' => $this->id,
-            'name' => $this->avatar,
-            'email' => $this->email,
-            'profession' => $this->profession,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-        ];
-
-        if ($this->withCourses) {
-            $teacher['courses'] = $this->courses;
-        }
-
         return [
             'status' => 'success',
             'code' => 200,
-            'data' => $teacher
+            'data' => [
+                'id' => $this->id,
+                'name' => $this->avatar,
+                'email' => $this->email,
+                'profession' => $this->profession,
+                'courses' => $this->when($this->withCourses, $this->courses),
+                'created_at' => $this->created_at,
+                'updated_at' => $this->updated_at,
+            ]
         ];
     }
 }

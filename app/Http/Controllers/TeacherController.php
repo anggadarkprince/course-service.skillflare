@@ -42,7 +42,7 @@ class TeacherController extends Controller
      */
     public function show(Teacher $teacher)
     {
-        return new TeacherResource($teacher);
+        return new TeacherResource($teacher, true);
     }
 
     /**

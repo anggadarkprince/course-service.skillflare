@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CourseRequest;
+use App\Http\Resources\CourseCollection;
+use App\Http\Resources\CourseResource;
 use App\Models\Course;
 use App\Models\UserCourse;
-use Exception;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class CourseController extends Controller
      * Display a listing of the course.
      *
      * @param Request $request
-     * @return JsonResponse
+     * @return CourseCollection
      */
     public function index(Request $request)
     {
@@ -33,50 +34,40 @@ class CourseController extends Controller
             return $query->where("status", $status);
         });
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $courses->paginate()
-        ]);
+        return new CourseCollection($courses->paginate());
     }
 
     /**
      * Store a newly created course in storage.
      *
      * @param CourseRequest $request
-     * @return JsonResponse
+     * @return CourseResource
      */
     public function store(CourseRequest $request)
     {
         $course = Course::create($request->validated());
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $course
-        ]);
+        return new CourseResource($course);
     }
 
     /**
      * Display the specified course.
      *
      * @param Course $course
-     * @return JsonResponse
+     * @return CourseResource
      */
     public function show(Course $course)
     {
         $course['total_user'] = UserCourse::where('course_id', $course->id)->count();
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $course
-                ->load('chapters.lessons')
-                ->load('teacher')
-                ->load('courseImages')
-                ->load(['reviews' => function (Relation $builder) {
-                    $builder->take(100);
-                }])
-        ]);
+
+        return new CourseResource($course
+            ->load('chapters.lessons')
+            ->load('teacher')
+            ->load('courseImages')
+            ->load(['reviews' => function (Relation $builder) {
+                $builder->take(100);
+            }])
+        );
     }
 
     /**
@@ -84,34 +75,25 @@ class CourseController extends Controller
      *
      * @param CourseRequest $request
      * @param Course $course
-     * @return JsonResponse
+     * @return CourseResource
      */
     public function update(CourseRequest $request, Course $course)
     {
         $course->fill($request->validated())->save();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $course
-        ]);
+        return new CourseResource($course);
     }
 
     /**
      * Remove the specified course from storage.
      *
      * @param Course $course
-     * @return JsonResponse
-     * @throws Exception
+     * @return CourseResource
      */
     public function destroy(Course $course)
     {
         $course->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $course
-        ]);
+        return new CourseResource($course);
     }
 }
